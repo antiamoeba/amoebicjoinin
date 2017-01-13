@@ -1,0 +1,74 @@
+<html>
+<head>
+	<title>Create shit</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Rajdhani:300,400,500,600,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+	<style>
+		.content {
+			margin: 0 auto;
+			width: 800px;
+		}
+		.joinable {
+			cursor:pointer;
+			width: 100%;
+		}
+		.unjoinable {
+			width: 100%;
+		}
+	</style>
+	<script>
+		$(window).ready(function() {
+			var fileInput = $('#files');
+			var uploadButton = $('#upload');
+
+			uploadButton.on('click', function() {
+			    if (!window.FileReader) {
+			        alert('Your browser is not supported')
+			    }
+			    var input = fileInput.get(0);
+			    
+			    // Create a reader object
+			    var reader = new FileReader();
+			    if (input.files.length) {
+			        var textFile = input.files[0];
+			        reader.readAsText(textFile);
+			        $(reader).on('load', processFile);
+			    } else {
+			        alert('Please upload a file before continuing')
+			    } 
+			});
+
+			function processFile(e) {
+			    var file = e.target.result,
+			        results;
+			    if (file && file.length) {
+			    	var obj = new Object();
+			    	obj.csv = file;
+			    	obj.name = $("#name").val();
+			    	obj.details = $("#desc").val();
+			        $.post("create", obj, function( data ) {
+						  console.log(data);
+					});
+			    }
+			}
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div>Name</div> <br>
+		<input type="text" class="form-control" id="name" /><br>
+		<div>Description</div><br>
+		<input type="text" class="form-control" id="desc" /><br>
+		<input type=file id="files" />
+		<button id="upload" class="btn btn-default">Create</button>
+	</div>
+</body>
+</html>

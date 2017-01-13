@@ -1,0 +1,21 @@
+{
+  "name": "joininmaybe",
+  "version": "1.0.0",
+  "description": "An easy way to set up and join events.",
+  "main": "index.js",
+  "dependencies": {
+    "amoebictemplating": "^0.0.5",
+    "body-parser": "^1.15.2",
+    "express": "^4.10.2",
+    "mongoose": "^3.9.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "join"
+  ],
+  "author": "antiamoeba",
+  "license": "ISC"
+}

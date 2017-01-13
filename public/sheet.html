@@ -1,0 +1,164 @@
+<html>
+<head>
+	<title>{{name}}</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Rajdhani:300,400,500,600,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+	<style>
+		.content {
+			margin: 0 auto;
+			width: 800px;
+		}
+		.joinable {
+			cursor:pointer;
+			width: 100%;
+		}
+		.unjoinable {
+			width: 100%;
+		}
+	</style>
+	<script>
+		$(document).ready(function() {
+			$("#submit").click(function() {
+				$("#submit").html("Submitting...");
+				var questions = new Object();
+				var id = 0;
+				var index = 0;
+				$('[name=question]').each(function() {
+					if($(this).attr("typ")=="radio") {
+						
+						questions[index]={question:$(this).attr("quest"), answer: $('input[name='+id+']:checked').attr("val")};
+						id++;
+					}
+					else if($(this).attr("typ")=="dropdown") {
+						questions[index]={question:$(this).attr("quest"), answer: $('#'+id+' option:checked').text()};
+						id++;
+					}
+					else {
+						questions[index]={question:$(this).attr("quest"), answer:$('#'+id).val()};
+						id++;
+					}
+					index++;
+				});
+				var rowCols = new Object();
+				index = 0;
+				$(".joinable").each(function() {
+					if($(this).attr("selects")=="true") {
+						rowCols[index] = {row: $(this).attr("row")+"", col: $(this).attr("column")};
+						index++;
+					}
+				});
+				var totObject = new Object();
+				totObject["answers"] = questions;
+				totObject["rowCols"] = rowCols;
+				$.ajax({
+					url:"/signup/{{id}}",
+					type:"POST",
+					data:JSON.stringify(totObject),
+					contentType:"application/json; charset=utf-8",
+					dataType:"text",
+					success: function(msg) {
+				        $("body").html(msg);
+				    }
+				});
+			});
+			$(".joinable").click(function() {
+				$(this).addClass("btn-success");
+				$(this).attr("selects", "true");
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+	<h1>{{name}}</h1>
+	<div>{{details}}</div><br>
+	<table class="table table-hover" id="calendar">
+		<thead>
+			<tr>
+				<td>
+				</td>
+				<%
+				var columns = {{columns}}
+				for(var i=0;i<columns.length;i++) {
+					column = columns[i];
+				%>
+					<th>
+						{{column}}
+					</th>
+				<%}%>
+			</tr>
+		</thead>
+		<tbody>
+		<% 
+		var rows = {{rows}};
+		for(var i=0;i<rows.length;i++) {
+			row = rows[i];
+		%>
+			<tr>
+			<td style="vertical-align:middle">{{row}}</td>
+			<div class="btn-group" role="group">
+			<%
+			var limits = {{limits}};
+			for(var j=0;j<columns.length;j++) {
+				column = columns[j];
+				var limit = limits.filter(function( obj ) {
+  					return obj.row == i&&obj.col == j;
+				});
+				if(limit[0].people.length<limit[0].max) {
+			%>
+				<td><button class="joinable btn btn-default" type="button" rowNum="{{i}}" colNum="{{j}}" row="{{row}}" column="{{column}}" selects="false">SELECT
+				</button></td>
+			<% } else {%>
+				<td><button class="unjoinable btn btn-default" type="button" rowNum="{{i}}" colNum="{{j}}" row="{{row}}" column="{{column}}" selects="false" disabled>SELECT
+				</button></td>
+			<% } }%>
+			</div>
+			</tr>
+		<% } %>
+		</tbody>
+	</table>
+		<% 	
+			for(var i=0;i<{{questions}}.length;i++) {
+				var question = {{questions}}[i];
+				var typ = question.type;
+				var questionText = question.text;
+		%>
+			<div name="question" typ="{{typ}}" quest="{{questionText}}">
+			<%if(question.type == "radio") {
+				%>
+				{{questionText}} <br>
+				<% for(var j=0;j<question.answers.length;j++) {
+					answer = question.answers[j];
+				%>
+					<input type="radio" name="{{i}}" val="{{answer}}">{{answer}}<br>
+				<% } %>
+			<% } %>
+			<%if(question.type == "dropdown") {
+				%>
+				{{questionText}} <br>
+				<select id="{{i}}">
+				<% 
+				for(var j=0;j<question.answers.length;j++) {
+					answer = question.answers[j];
+				%>
+					<option>{{answer}}</option>
+				<% } %>
+				</select> <br>
+			<% } %>
+			<%if(question.type == "text") { %>
+				{{questionText}} <br>
+				<input class = "form-control" type="text" id="{{i}}" style="width: 100%"><br>
+			<% } %>
+			</div>
+		<% } %>
+		<button id="submit" class="btn btn-primary">Submit</button>
+	</div>
+</body>
+</html>

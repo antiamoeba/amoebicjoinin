@@ -1,0 +1,76 @@
+<html>
+<head>
+	<title>Results for {{name}}</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Rajdhani:300,400,500,600,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+	<style>
+		.content {
+			margin: 0 auto;
+			width: 800px;
+		}
+		.joinable {
+			cursor:pointer;
+			width: 100%;
+		}
+		.unjoinable {
+			width: 100%;
+		}
+	</style>
+	<script>
+	</script>
+</head>
+<body>
+	<div class="content">
+	<h1>{{name}}</h1>
+	<div>{{details}}</div><br>
+	<table class="table table-hover" id="calendar">
+		<thead>
+			<tr>
+				<td>
+				</td>
+				<%
+				var columns = {{columns}}
+				for(var i=0;i<columns.length;i++) {
+					column = columns[i];
+				%>
+					<th>
+						{{column}}
+					</th>
+				<%}%>
+			</tr>
+		</thead>
+		<tbody>
+		<% 
+		var rows = {{rows}};
+		for(var i=0;i<rows.length;i++) {
+			row = rows[i];
+		%>
+			<tr>
+			<td style="vertical-align:middle">{{row}}</td>
+			<div class="btn-group" role="group">
+			<%
+			var limits = {{limits}};
+			for(var j=0;j<columns.length;j++) {
+				column = columns[j];
+				var limit = limits.filter(function( obj ) {
+  					return obj.row == i&&obj.col == j;
+				});
+			%>
+				<td><button class="joinable btn btn-default" type="button" rowNum="{{i}}" colNum="{{j}}" row="{{row}}" column="{{column}}" selects="false">VIEW
+				</button></td>
+			<% } %>
+			</div>
+			</tr>
+		<% } %>
+		</tbody>
+	</table>
+	</div>
+</body>
+</html>
